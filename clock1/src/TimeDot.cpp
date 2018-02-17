@@ -18,11 +18,11 @@ void TimeDot::setup(float rotations, float distance){
 
 void TimeDot::reset(){
     
-    mRadius =  ofRandom(10, 84);
+    mRadius =  ofRandom(10, 74);
 
     float saturation = 240 + ofRandom(-10,10);
     float brigthness = 200 + ofRandom(-10,10);
-    float hue = ofRandom(130,140);
+    float hue = ofRandom(125,140);
 
     mColor.setHsb(hue, saturation, brigthness);
     mDarkerColor.setHsb(hue, saturation, brigthness + 10);

@@ -9,7 +9,7 @@ void ofApp::setup(){
     
     
     ofColor backgroundColor;
-    backgroundColor.setHsb(140, 220, 40);
+    backgroundColor.setHsb(140, 140, 125);
     ofSetBackgroundColor(backgroundColor);
     
     startTime = -1;
@@ -17,11 +17,11 @@ void ofApp::setup(){
     
     float maxRotation = M_PI;
 
-    for(int i=0; i < 500; ++i){
+    for(int i=0; i < 1000; ++i){
 
         TimeDot dot;
         float rotations = ofRandom(10, maxRotation);
-        dot.setup(rotations ,ofRandom(10.0f, 1534));
+        dot.setup(rotations ,ofRandom(10.0f, ofGetWindowWidth() * 0.5));
         dots.push_back(dot);
 
     }
