@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-               BuildableName = "clock1.app"
-               BlueprintName = "clock1"
-               ReferencedContainer = "container:clock1.xcodeproj">
+               BuildableName = "2_particle_clock.app"
+               BlueprintName = "2_particle_clock"
+               ReferencedContainer = "container:2_particle_clock.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "clock1.app"
-            BlueprintName = "clock1"
-            ReferencedContainer = "container:clock1.xcodeproj">
+            BuildableName = "2_particle_clock.app"
+            BlueprintName = "2_particle_clock"
+            ReferencedContainer = "container:2_particle_clock.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </TestAction>
@@ -52,9 +52,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "clock1.app"
-            BlueprintName = "clock1"
-            ReferencedContainer = "container:clock1.xcodeproj">
+            BuildableName = "2_particle_clock.app"
+            BlueprintName = "2_particle_clock"
+            ReferencedContainer = "container:2_particle_clock.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
       <AdditionalOptions>
@@ -70,9 +70,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E4B69B5A0A3A1756003C02F2"
-            BuildableName = "clock1.app"
-            BlueprintName = "clock1"
-            ReferencedContainer = "container:clock1.xcodeproj">
+            BuildableName = "2_particle_clock.app"
+            BlueprintName = "2_particle_clock"
+            ReferencedContainer = "container:2_particle_clock.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
