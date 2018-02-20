@@ -15,7 +15,8 @@ class ofApp : public ofBaseApp{
     
     // going fullscreen causes a bug on ofGetWindowWidth & height there saving it.
     ofVec2f windowSize;
-    
+    ofVec2f windowCenter;
+
     vector<Dot> dots;
     vector<Particle> particles;
 
@@ -23,6 +24,11 @@ class ofApp : public ofBaseApp{
     ofVec2f popADot();
     void launchParticles(ofVec2f& position);
     void applyExplosionForce(ofVec2f& position);
+    
+    ofSoundPlayer soundplayer1;
+    ofSoundPlayer soundplayer2;
+    
+    int sndIndex;
 
 	public:
 		void setup();
