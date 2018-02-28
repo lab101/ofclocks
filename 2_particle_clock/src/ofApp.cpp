@@ -3,25 +3,26 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     
+    //ofSetFullscreen(true);
     
     ofSetWindowShape(1400, 1400);
+  //  ofSetWindowPosition(1200, 0);
     
     // the actual time you will be counting to.
     
     // 1 min fast countdown
-    countDownInSeconds = 1 * 60;
-    float nrOfDots = countDownInSeconds * 4 ;
-    int radius = 12;
-    int spacing = 70;
-    int maxWidth = 1000;
+//    countDownInSeconds = 40;
+//    float nrOfDots = 40 * 3;
+//    int radius = 12;
+//    int spacing = 80;
+//    int maxWidth = 1000;
 
-    // 15 min slow countdown
-//    countDownInSeconds = 15 * 60;
-//    float nrOfDots = countDownInSeconds * 1 ;
-//    int radius = 8;
-//    int spacing = 47;
-//    int maxWidth = 1500;
-
+   //  15 min slow countdown
+    countDownInSeconds = 15 * 60;
+    float nrOfDots = countDownInSeconds * 2 ;
+    int radius = 6;
+    int spacing = 32;
+    int maxWidth = 1300;
 
     
     
@@ -32,7 +33,6 @@ void ofApp::setup(){
    // ofSetFullscreen(true);
     ofSetCircleResolution(14);
 
-    startTime = ofGetElapsedTimef();
 
     
     popInterval = countDownInSeconds / nrOfDots;
@@ -218,8 +218,6 @@ void ofApp::keyPressed(int key){
         for(Dot& d : dots){
             d.reset();
         }
-    }else{
-
     }
 }
 

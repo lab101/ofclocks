@@ -19,6 +19,6 @@
 	<key>CFBundleIconFile</key>
 	<string>${ICON}</string>
 	<key>NSHighResolutionCapable</key>
-	<true/>
+	<false/>
 </dict>
 </plist>
