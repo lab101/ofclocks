@@ -48,7 +48,7 @@ void ofApp::setup(){
     int y = 0;
     
     // short notation to fill up the vector with particles
-    particles.assign(600,Particle());
+    particles.assign(6000,Particle());
     
     
     for(int i = 0; i < nrOfDots;++i){
@@ -176,7 +176,7 @@ void ofApp::launchParticles(ofVec2f& position){
     int foundFreeParticles =0;
     for(Particle& p  : particles ){
         if(p.mIsDead){
-            if(++foundFreeParticles > 80) return;
+            if(++foundFreeParticles > 280) return;
             p.mIsDead = false;
             p.mPosition = position;
             p.mSpeed = ofRandom(1, 22);
@@ -212,6 +212,16 @@ void ofApp::keyPressed(int key){
     if(key == 'f'){
         ofToggleFullscreen();
     }else if (key == ' '){
+        ofVec2f  popPosition = popADot();
+        
+        soundplayer2.play();
+        launchParticles(popPosition);
+        applyExplosionForce(popPosition);
+        float pan = ofMap(popPosition.x, 0, size.x , -1 , 1);
+        soundplayer2.setPan(pan);
+
+        return;
+        
         startTime = ofGetElapsedTimef();
         nextPopTime = popInterval;
 

@@ -3,6 +3,8 @@
 #include "ofMain.h"
 
 #include "Block.hpp"
+#include "ofxGui.h"
+
 
 class ofApp : public ofBaseApp{
 
@@ -17,14 +19,31 @@ class ofApp : public ofBaseApp{
     float popInterval;
     float nextPopTime;
 
+    
+    ofxFloatSlider paramRMin;
+    ofxFloatSlider paramRMax;
+    ofxFloatSlider param3;
+    ofxFloatSlider param4;
+    ofxFloatSlider paramDistance;
 
-    ofVec2f startABlock();
+    ofxFloatSlider pctmin;
+    ofxFloatSlider pctax;
+    
+    ofImage hand;
+    ofImage hand2;
+
+    bool debug = false;
+    
+    ofxPanel gui;
+
+    ofVec2f startABlock(bool random);
     void addRectangle(Block& b);
     
 	public:
 		void setup();
 		void update();
 		void draw();
+        void drawFoldLine(ofVec2f p1,ofVec2f p2,float pct,float steps, Block& block);
 
 		void keyPressed(int key);
 		void keyReleased(int key);
