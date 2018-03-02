@@ -15,13 +15,15 @@ class Block{
     
 public:
 
-    enum blockState{ WAITING, MOVEIN, IN_PLACE, MOVE_HAND_BACK ,DONE };
+    enum blockState{ WAITING, MOVEIN, IN_PLACE, MOVE_HAND_BACK ,DONE , HANG , DROP };
+	string getStateString();
 
     blockState currentState;
     
     float startAnimationTime;
     float startRotationAnimationTime;
 
+	float easeIn(float t, float b, float c, float d);
     float easeOut(float t,float b , float c, float d);
     float elasticOut(float t,float b , float c, float d);
 
@@ -38,9 +40,11 @@ public:
     void lerpRotation();
     
     void startMoving();
+	void hang();
     
     float rotation;
-    float startRotation;
+	float startRotation;
+	float targetRotation;
 
     ofVec2f targetPosition;
     ofVec2f startPosition;

@@ -6,11 +6,12 @@ void ofApp::setup(){
     //ofSetFullscreen(true);
     
     ofSetWindowShape(1400, 1400);
-  //  ofSetWindowPosition(1200, 0);
+ 
     
-    // the actual time you will be counting to.
     
-    // 1 min fast countdown
+	//CONFIGS
+
+    // 40 sec fast countdown
 //    countDownInSeconds = 40;
 //    float nrOfDots = 40 * 3;
 //    int radius = 12;
@@ -25,13 +26,10 @@ void ofApp::setup(){
     int maxWidth = 1300;
 
     
-    
-    ofColor backgroundColor;
-    backgroundColor.setHsb(300, 255, 255);
-    ofSetBackgroundColor(10);
+  
+    ofSetBackgroundColor(0);
     startTime = -1;
-   // ofSetFullscreen(true);
-    ofSetCircleResolution(14);
+
 
 
     
@@ -48,7 +46,7 @@ void ofApp::setup(){
     int y = 0;
     
     // short notation to fill up the vector with particles
-    particles.assign(6000,Particle());
+    particles.assign(1000,Particle());
     
     
     for(int i = 0; i < nrOfDots;++i){
@@ -69,10 +67,7 @@ void ofApp::setup(){
     size.y = y;
     
 
-    soundplayer1.load("switch33.wav");
     soundplayer2.load("click1.wav");
-    
-    soundplayer1.setMultiPlay(true);
     soundplayer2.setMultiPlay(true);
 
 }
@@ -117,8 +112,6 @@ void ofApp::update(){
                 soundplayer2.setPan(pan);
 
             }
-            
-            
         }
     }
 
@@ -157,10 +150,14 @@ void ofApp::draw(){
     ofPushMatrix();
     ofTranslate(windowCenter.x - (size.x * 0.5), windowCenter.y - (size.y * 0.5));
 
+		ofSetCircleResolution(14);
+
         for(Dot& d: dots){
             d.draw();
         }
     
+		ofSetCircleResolution(6);
+
         for(Particle& p  : particles ){
             p.draw();
         }
@@ -176,7 +173,7 @@ void ofApp::launchParticles(ofVec2f& position){
     int foundFreeParticles =0;
     for(Particle& p  : particles ){
         if(p.mIsDead){
-            if(++foundFreeParticles > 280) return;
+            if(++foundFreeParticles > 80) return;
             p.mIsDead = false;
             p.mPosition = position;
             p.mSpeed = ofRandom(1, 22);
@@ -212,16 +209,7 @@ void ofApp::keyPressed(int key){
     if(key == 'f'){
         ofToggleFullscreen();
     }else if (key == ' '){
-        ofVec2f  popPosition = popADot();
-        
-        soundplayer2.play();
-        launchParticles(popPosition);
-        applyExplosionForce(popPosition);
-        float pan = ofMap(popPosition.x, 0, size.x , -1 , 1);
-        soundplayer2.setPan(pan);
-
-        return;
-        
+    
         startTime = ofGetElapsedTimef();
         nextPopTime = popInterval;
 

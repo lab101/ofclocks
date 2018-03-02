@@ -36,7 +36,9 @@ class ofApp : public ofBaseApp{
     
     ofxPanel gui;
 
-    ofVec2f startABlock(bool random);
+    void startABlock(bool random);
+	void hangABlock();
+
     void addRectangle(Block& b);
     
 	public:

@@ -25,7 +25,6 @@ class ofApp : public ofBaseApp{
     void launchParticles(ofVec2f& position);
     void applyExplosionForce(ofVec2f& position);
     
-    ofSoundPlayer soundplayer1;
     ofSoundPlayer soundplayer2;
     
     int sndIndex;

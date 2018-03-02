@@ -8,6 +8,19 @@
 #include "Block.hpp"
 
 
+// used for debugging
+string Block::getStateString() {
+	if (currentState == WAITING)  return "WAITING";
+	if (currentState == MOVEIN)  return "MOVEIN";
+	if (currentState == IN_PLACE)  return "IN_PLACE";
+	if (currentState == MOVE_HAND_BACK)  return "MOVE_HAND_BACK";
+	if (currentState == DONE)  return "DONE";
+	if (currentState == HANG)  return "HANG";
+	if (currentState == DROP)  return "DROP";
+
+	return "UNKNOWN";
+}
+
 Block::Block(ofVec2f newPosition, ofRectangle newTextureRectangle){
     
     targetPosition = newPosition;
@@ -51,6 +64,8 @@ void Block::reset(){
     
     
     startRotation = ofRandom(-120,120);
+	targetRotation = 0;
+
     rotation = startRotation;
 
     float radius = fmax(ofGetWindowWidth(), ofGetWindowHeight());
@@ -65,10 +80,13 @@ void Block::reset(){
 
 }
 
+float Block::easeIn(float t, float b, float c, float d) {
+	return c*(t /= d)*t + b;
+};
+
+
 float Block::easeOut(float t,float b , float c, float d) {
     return c*((t=t/d-1)*t*t + 1) + b;
-
-  //  return c*((t=t/d-1)*t*t + 1) + b;
 }
 
 float Block::elasticOut(float t,float b , float c, float d) {
@@ -87,6 +105,18 @@ void Block::startMoving(){
     currentState = MOVEIN;
 }
 
+void Block::hang() {
+	startAnimationTime = ofGetElapsedTimef();
+	startRotationAnimationTime = ofGetElapsedTimef();
+
+	currentState = HANG;
+
+	if (ofRandom(4) < 2)  currentState = DROP;
+	targetRotation = (ofRandom(110, 70));
+	startRotation = rotation;
+}
+
+
 
 void Block::lerpRotation(){
     float div = ofGetElapsedTimef() - startRotationAnimationTime;
@@ -94,7 +124,7 @@ void Block::lerpRotation(){
     float pct = ofMap(div, 0, 5, 0, 0.8 ,true);
     pct = elasticOut(pct, 0, 1, 1);
 
-    rotation = ofLerp(startRotation, 0, pct);
+    rotation = ofLerp(startRotation, targetRotation, pct);
     
    
 }
@@ -144,8 +174,20 @@ void Block::update(){
         if(div >= 2) {
             currentState = DONE;
         }
-
     }
+
+	else if (currentState == HANG) {
+		lerpRotation();
+	}
+
+	else if (currentState == DROP) {
+		lerpRotation();
+		float div = ofGetElapsedTimef() - startAnimationTime;
+		float pct = ofMap(div, 0, 2, 0, 1, true);
+		pct = easeIn(pct, 0, 1, 1);
+
+		drawPosition = targetPosition.getInterpolated(ofVec2f(drawPosition.x, ofGetWindowHeight() + 100), pct);
+	}
 
     
 }

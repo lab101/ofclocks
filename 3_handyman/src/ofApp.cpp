@@ -3,45 +3,52 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
 
-    
-    image.load("02_Its-Nice-That_Barbican-ArticleINT.jpg");
-    image.load("Untitled-6.png");
+	cout << "test" << endl;
+
+    image.load("stop.png");
     
     ofSetBackgroundColor(120);
     
-    // credits https://jonny-doomsday.deviantart.com/art/Hands-Vector-Pack-187038799
+    // image credits https://jonny-doomsday.deviantart.com/art/Hands-Vector-Pack-187038799
     
     hand.load("hand.png");
     hand2.load("hand2.png");
 
-    //ofSetWindowShape(1800, 1600);
     
-    gui.setup(); // most of the time you don't need a name
+    gui.setup(); 
     gui.setWidthElements(1000);
     gui.setDefaultWidth(1000);
     gui.setSize(1000, 1000);
     gui.setPosition(1000, 10);
 
 
+	// params for tweaking the arm motion.
     gui.add(paramRMin.setup("paramRMin", 140.0, 0.0, 300.0));
     gui.add(paramRMax.setup("paramRMax", 140.0, 0.0, 300.0));
     gui.add(param3.setup("p3", 4.0, 0.0, 300.0));
     gui.add(param4.setup("p4", 4.0, 0.0, 300.0));
-   
     gui.add(pctmin.setup("pctmin", 0, 0, 1));
     gui.add(pctax.setup("pctmax", 0, 0, 1));
 
-    
     gui.loadFromFile("settings.xml");
     
-    ofSetFullscreen(true);
-    // 4 // 10
-    
-    blockSize.x = image.getWidth() / 8;
-    blockSize.y = image.getHeight() / 15;
 
-//    blockSize.x = image.getWidth() / 4;
-//    blockSize.y = image.getHeight() / 10;
+
+	// CONFIG
+   // ofSetFullscreen(true);
+	ofSetWindowShape(1800, 1600);
+
+	// small blocks
+	//blockSize.x = image.getWidth() / 8;
+    //blockSize.y = image.getHeight() / 15;
+
+	// bigger blocks
+    blockSize.x = image.getWidth() / 4;
+    blockSize.y = image.getHeight() / 10;
+
+
+	// the actual time to do the countdown.
+	countDownInSeconds = 10 * 1;
 
     
     startTime = -1;
@@ -56,46 +63,41 @@ void ofApp::setup(){
             ofVec2f position = startDrawPosition + ofVec2f(w,h);
             Block newBlock(position,ofRectangle(ofVec2f(w,h), blockSize.x, blockSize.y));
             blocks.push_back(newBlock);
-            
         }
     }
-    
-    countDownInSeconds = 60 * 5;
+
+	// timing for pop moments
     popInterval = countDownInSeconds / blocks.size();
     nextPopTime = popInterval;
 
     
     startTime = ofGetElapsedTimef();
-
-    
+   
 }
 
 
-void ofApp::addRectangle(Block& b){
-    
-//
-//    float n1= ofNoise(ofGetElapsedTimef() * 0.1, b.targetPosition.x) * 20;
-//    float n2= ofNoise(ofGetElapsedTimef() * 0.1, b.targetPosition.x) * 4;
-//    ofVec2f n(n1,n2);
-//
-    ofVec2f d2= b.drawPosition ;
 
-    
+// recreating the mesh block by block
+
+void ofApp::addRectangle(Block& b){
+
+	ofVec3f topLeft = ofVec3f(0, 0, 0);
     ofVec3f topRight = ofVec3f(blockSize.x, 0 ,0);
     ofVec3f bottomRight = ofVec3f(blockSize.x,blockSize.y,0);
     ofVec3f bottomLeft = ofVec3f(0,blockSize.y,0);
 
-
-    topRight.rotate(b.rotation ,ofVec3f(0,0,1));
-    bottomRight.rotate(b.rotation,ofVec3f(0,0,1));
-    bottomLeft.rotate(b.rotation,ofVec3f(0,0,1));
+	topLeft.rotate(b.rotation, ofVec3f(10, 10, 0), ofVec3f(0, 0, 1));
+    topRight.rotate(b.rotation, ofVec3f(10, 10, 0),ofVec3f(0,0,1));
+    bottomRight.rotate(b.rotation, ofVec3f(10, 10, 0),ofVec3f(0,0,1));
+    bottomLeft.rotate(b.rotation, ofVec3f(10, 10, 0),ofVec3f(0,0,1));
     
-    topRight += d2;
-    bottomRight += d2;
-    bottomLeft += d2;
+	topLeft += b.drawPosition;
+    topRight += b.drawPosition;
+    bottomRight += b.drawPosition;
+    bottomLeft += b.drawPosition;
 
     // left top
-    mesh.addVertex(ofVec3f(d2));
+    mesh.addVertex(topLeft);
     mesh.addTexCoord(b.textureRectangle.getTopLeft());
     
     // right top
@@ -115,24 +117,23 @@ void ofApp::addRectangle(Block& b){
     mesh.addTexCoord(b.textureRectangle.getBottomLeft());
 
     //left top
-    mesh.addVertex(ofVec3f(d2));
+    mesh.addVertex(topLeft);
     mesh.addTexCoord(b.textureRectangle.getTopLeft());
 
 }
 
 
 
-
-ofVec2f ofApp::startABlock(bool random){
-    // look for a free dot starting from a random index.
+// pick random blocks or go from left to right.
+void ofApp::startABlock(bool random){
+    // look for a free block starting from a random index.
     
     Block* mostLeft = nullptr;
     
     int index = ofRandom(blocks.size());
     for(int i = 0; i < blocks.size(); i++ ){
         if(blocks[index].currentState == Block::WAITING){
-//            blocks[index].startMoving();
-            
+           
             if(random){
                 blocks[index].startMoving();
                 return;
@@ -141,53 +142,65 @@ ofVec2f ofApp::startABlock(bool random){
             if(mostLeft == nullptr || (blocks[index].targetPosition.x < mostLeft->targetPosition.x)){
                 mostLeft = &(blocks[index]);
             }
-            //return blocks[index].startPosition;
         }
         ++index;
-        if(index > blocks.size()) index = 0;
+        if(index >= blocks.size()) index = 0;
     }
     
     if(mostLeft != nullptr){
         mostLeft->startMoving();
-        return mostLeft->startPosition;
     }
     
-    return ofVec2f(-100,-100);
+}
+
+
+void ofApp::hangABlock() {
+	int index = ofRandom(blocks.size());
+	for (int i = 0; i < blocks.size(); i++) {
+		if (blocks[index].currentState == Block::DONE) {
+			blocks[index].hang();
+			return;
+		}
+		++index;
+		if (index >= blocks.size()) index = 0;
+	}
 }
 
 //--------------------------------------------------------------
 void ofApp::update(){
 
+	// not running yet return.
     if(startTime == -1) return;
+
+	float timeDiv = ofGetElapsedTimef() - startTime;
+
+    nextPopTime -= ofGetLastFrameTime();
     
-        nextPopTime -= ofGetLastFrameTime();
-        if(nextPopTime < 0){
-            
+	if(nextPopTime < 0){
             nextPopTime += popInterval;
-            startABlock(true);
-        }
+
+			if (timeDiv < (countDownInSeconds +20)) {
+				startABlock(true);
+			}
+			else {
+				if(ofRandom(8) < 3)	hangABlock();
+			}
+    }
     
-    float div =  (ofGetElapsedTimef() - startTime) ;
-    
-//    if(div >= countDownInSeconds){
-//        startTime = -1;
-//    }
-    
+     
     mesh.clear();
     
-    float pct = div / countDownInSeconds;
-    std::sort(blocks.begin(), blocks.end(), [](Block& a, Block& b) {
+	// sort so we have the active blocks on top.
+	std::sort(blocks.begin(), blocks.end(), [](Block& a, Block& b) {
         return b.currentState < a.currentState;
     });
     
-    for(Block& b: blocks){
-        
-    
+
+	for(Block& b: blocks){
         b.update();
         if(b.currentState != Block::WAITING){
             addRectangle(b);
         }
-
     }
     
    
@@ -196,60 +209,35 @@ void ofApp::update(){
 
 
 void ofApp::drawFoldLine(ofVec2f p1,ofVec2f p2, float pct,float steps, Block& block){
-   
-//    ofVec2f p1(100,100);
-//    ofVec2f p2(400,500);
-//    float d = sin(ofGetElapsedTimef()) * 200;
-//    p2 += ofVec2f(d,d);
-    
-   // ofSetColor(255, 0, 0 );
-   // ofDrawLine(p1, p2);
+  
 
     int direction = block.direction;
-    ofVec2f prevP;
+    ofVec2f prevPoint;
     
     float distance = p2.distance(p1);
     float rMax = ofMap(pct, pctmin, pctax, paramRMin, paramRMax,true);
     float ss = ofMap(pct, pctmin, pctax, param3, param4,true);
     float radius;
     
-    for(float i=0; i < 1; i += steps){
+    for(float i=0; i <= 1; i += steps){
         
         
         radius = sin(i * ss) * rMax;
 
         ofVec2f p = p2.getInterpolated(p1, i);
-//
-     //   ofDrawCircle(p, 3);
         ofVec2f pp =  (p2-p1).getPerpendicular();
         ofVec2f pp2 = p+ (pp * radius * direction);
         
-    //    ofSetColor(255, 0, 0 );
-      //  ofNoFill();
-      //  ofDrawCircle(pp2, 6);
-//
-       // direction = - direction;
-        
-               // ofSetColor(0, 0, 255 );
-
+  
         if(i!=0){
-            
-//            ofVec2f inter;
-//            for(float j=0; j < 1; j+=0.1){
-//                ofVec2f inter2 = pp2.getInterpolated(prevP, i);
-//                if(j!=0){
-//                    ofDrawLine(inter, inter2);
-//                }
-//                inter  = inter2;
-//            }
-            
-            ofDrawLine(prevP, pp2);
+  
+            ofDrawLine(prevPoint, pp2);
         }
-        prevP = pp2;
+		prevPoint = pp2;
         
     }
     
-    ofDrawLine(prevP, p1);
+   // ofDrawLine(prevPoint, p1);
 }
 
 
@@ -258,59 +246,48 @@ void ofApp::draw(){
 
     
 
-   // drawFoldLine(ofVec2f(210,800), ofVec2f(1010,80),0.01);
-    //return;
-
-
 
     ofEnableAlphaBlending();
 
+	// draw shadows
+	// performancewise it would be better to draw the whole scene in a fbo and use this for the shadwow.
     ofPushMatrix();
-    ofTranslate(10, 10);
+		ofTranslate(10, 10);
+    	ofSetColor(0,0,0,40);
     
-    ofSetColor(0,0,0,40);
-
-    
-    image.bind();
-
-    mesh.draw();
-
-    
-
-    ofSetColor(255);
-    mesh.draw();
-    image.unbind();
-    
-    
+		image.bind();
+		mesh.draw();
+		image.unbind();
    
-    ofSetColor(0,0,0,40);
-    
-    for(Block& b: blocks){
-        
-        // b.handPosition += blockSize;
-        
-        if(b.currentState != Block::WAITING && b.currentState != Block::DONE){
-            ofSetLineWidth(b.size );
-            
-            // ofSetColor(0);
-            
-            float steps =  ofMap(fabsf(b.startPosition.distance(b.targetPosition)), 0, 8000, 0.003, 0.001,true);
-            
-            
-            drawFoldLine(b.startPosition ,b.handPosition + (blockSize *0.5), b.movingPct, steps, b);
-            
-        }
-    }
+   
+		for(Block& b: blocks){
+			if(b.currentState != Block::WAITING && b.currentState != Block::DONE){
+				ofSetLineWidth(b.size );
+				float steps =  ofMap(fabsf(b.startPosition.distance(b.targetPosition)), 0, 8000, 0.003, 0.001,true);
+				drawFoldLine(b.startPosition ,b.handPosition + (blockSize *0.5), b.movingPct, steps, b);
+			}
+		}
 
     ofPopMatrix();
 
+	// draw the mesh
+	image.bind();
+	ofSetColor(255);
+	mesh.draw();
+	image.unbind();
     
     
     for(Block& b: blocks){
 
-        if(b.currentState != Block::MOVEIN){
+		// draw the screw.
+
+		if (b.currentState == Block::DROP) {
+			ofSetColor(23);
+			ofDrawCircle(b.targetPosition + ofVec2f(10, 10), 4);
+
+		}else if(b.currentState != Block::MOVEIN){
             ofSetColor(23);
-            ofDrawCircle(b.drawPosition + ofVec2f(20,20), 4);
+            ofDrawCircle(b.drawPosition + ofVec2f(10,10), 4);
         }
         
         if(b.currentState != Block::WAITING && b.currentState != Block::DONE){
@@ -319,38 +296,32 @@ void ofApp::draw(){
             ofSetColor(25);
 
             float steps =  ofMap(fabsf(b.startPosition.distance(b.targetPosition)), 0, 8000, 0.003, 0.001,true);
-           
-            
             drawFoldLine(b.startPosition ,b.handPosition + (blockSize *0.5), b.movingPct, steps, b);
             
-           // if(b.currentState != Block::MOVE_HAND_BACK){
-                
+			// drawing the hand with correct rotation.
                 ofVec2f div =  (b.targetPosition - b.startPosition);
                 div.normalize();
-                ofVec2f p(1,0);
-                float angle = p.angle(div);
+                //ofVec2f p(1,0);
+                float angle = ofVec2f(1,0).angle(div);
                 
                 ofPushMatrix();
-                ofTranslate(b.handPosition + blockSize *0.5);
+					ofTranslate(b.handPosition + blockSize *0.5);
+					ofRotate(angle +90);
+	                ofTranslate(hand.getWidth() * -0.5, hand.getHeight() * -1);
+					ofSetColor(255);
 
-                ofRotate(angle +90);
-
-                ofTranslate(hand.getWidth() * -0.5, hand.getHeight() * -1);
-            ofSetColor(255);
-
-             if(b.currentState == Block::MOVE_HAND_BACK || b.movingPct > 0.9997){
-
-                hand2.draw(0,0);
-             }else{
-                hand.draw(0,0);
-                 
-             }
+		             if(b.currentState == Block::MOVE_HAND_BACK || b.movingPct > 0.9997){
+						hand2.draw(0,0);
+					}else{
+						hand.draw(0,0);
+					}
                 ofPopMatrix();
-            
-          
         }
         
       
+		if (debug) {
+			ofDrawBitmapStringHighlight(b.getStateString(), b.drawPosition);
+		}
         
     }
     
@@ -358,18 +329,16 @@ void ofApp::draw(){
 
 
     if(debug){
-    float div =  (ofGetElapsedTimef() - startTime) / countDownInSeconds;
-    ofDrawBitmapString((ofGetElapsedTimef() - startTime), 20, 40);
-    ofDrawBitmapString(div, 20, 20);
-   
-    
-    gui.draw();
+		float div =  (ofGetElapsedTimef() - startTime) / countDownInSeconds;
+		ofDrawBitmapString((ofGetElapsedTimef() - startTime), 20, 40);
+		ofDrawBitmapString(div, 20, 20);
+       
+		gui.draw();
         
-        ofSetColor(10);
-        ofSetLineWidth(1);
-        mesh.drawWireframe();
-
-    }
+		ofSetColor(10);
+		ofSetLineWidth(1);
+		mesh.drawWireframe();
+	}
 }
 
 //--------------------------------------------------------------
@@ -385,6 +354,9 @@ void ofApp::keyPressed(int key){
     }else if(key == 'd'){
         debug = !debug;
     }
+	else if (key == 'h') {
+		hangABlock();
+	}
 }
 
 //--------------------------------------------------------------
