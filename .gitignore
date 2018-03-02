@@ -13,6 +13,7 @@
 *.cpp.eep
 *.cpp.elf
 *.cpp.hex
+*.db
 
 **/bin/*.dll
 **/bin/*.exe
