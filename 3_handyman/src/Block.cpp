@@ -104,7 +104,7 @@ void Block::update(){
     // MOVEIN state
     if(currentState == MOVEIN){
         float div = ofGetElapsedTimef() - startAnimationTime;
-        float pct = ofMap(div, 0, 2, 0, 1, true);
+        float pct = ofMap(div, 0, 1.5, 0, 1, true);
         
         if(pct >= 1){
             currentState = IN_PLACE;
